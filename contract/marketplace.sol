@@ -46,6 +46,7 @@ contract Contact {
     struct Message {
         address sender;
         string content;
+        uint timestamp;
     }
 
     mapping(uint256 => Profile) internal profiles;
@@ -55,6 +56,11 @@ contract Contact {
     mapping(uint256 => Message) internal messages;
 
     mapping(address => uint256[]) internal chatsUnited;
+
+    modifier onlyOwner(uint _index)  {
+        require( profiles[_index].user == msg.sender, "Only callable by owner");
+        _;
+    }
 
     function registerUser(
         string memory _name,
@@ -75,7 +81,7 @@ contract Contact {
     }
 
     function sendMessage(uint256 _index, string memory _content) public {
-        messages[messagesLength] = Message(msg.sender, _content);
+        messages[messagesLength] = Message(msg.sender, _content, block.timestamp);
 
         chats[_index].push(messagesLength);
 
@@ -130,7 +136,7 @@ contract Contact {
             "Transfer failed."
         );
         chats[chatsLength].push(messagesLength);
-        messages[messagesLength] = Message(msg.sender, message);
+        messages[messagesLength] = Message(msg.sender, message, block.timestamp);
         chatsUnited[msg.sender].push(chatsLength);
         chatsUnited[profiles[_index].user].push(chatsLength);
         chatsLength++;
@@ -147,6 +153,10 @@ contract Contact {
 
     function getProfilesLength() public view returns (uint256) {
         return (profilesLength);
+    }
+
+    function updateProfilePrice(uint _index, uint _price) public payable onlyOwner(_index) {
+        profiles[_index].price = _price;
     }
 
     function getChatsLength() public view returns (uint256) {

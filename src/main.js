@@ -3,10 +3,9 @@ import { newKitFromWeb3 } from "@celo/contractkit"
 import BigNumber from "bignumber.js"
 import marketplaceAbi from "../contract/marketplace.abi.json"
 import erc20Abi from "../contract/erc20.abi.json"
+import {cUSDContractAddress, ERC20_DECIMALS, MPContractAddress} from "./utils/constants";
 
-const ERC20_DECIMALS = 18
-const MPContractAddress = "0xc38c76D18C4365c1c9176802DC9505529B40680E"
-const cUSDContractAddress = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1"
+
 
 let kit
 let contract
@@ -231,9 +230,6 @@ async function loadView(index) {
       const messagesIndex = await contract.methods.getMessages(shared).call()
 
       let messages = []
-
-      console.log(messagesIndex);
-
       let _messages = []
 
       for (let i = 0; i < messagesIndex.length; i++) {
@@ -248,8 +244,6 @@ async function loadView(index) {
         _messages.push(_message)
       }
       messages = await Promise.all(_messages)
-
-      console.log(messages);
 
       document.getElementById("chat").innerHTML = ""
 
@@ -294,11 +288,9 @@ function findShared(arr1, arr2) {
 }
 
 document.querySelector(".sendMessage").addEventListener("click", async (e) => {
-  console.log(e.target.id);
+
 
   const message = document.getElementById("messageContent").value;
-
-  console.log(shared);
 
   notification(`⌛ Sending message...`)
     try {
